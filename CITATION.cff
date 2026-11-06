@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article below."
+title: "qrscore: Quantile Rank Score tests (Python)"
+version: 1.5.2
+license: GPL-3.0-or-later
+repository-code: "https://github.com/songlab-cal/QRscore"
+authors:
+  - family-names: Zhou
+    given-names: Fanding
+  - family-names: Aw
+    given-names: Alan J.
+  - family-names: Erdmann-Pham
+    given-names: Dan D.
+  - family-names: Fischer
+    given-names: Jonathan
+  - family-names: Song
+    given-names: Yun S.
+preferred-citation:
+  type: article
+  title: "Robust and adaptive non-parametric tests for detecting general distributional shifts in gene expression"
+  authors:
+    - family-names: Zhou
+      given-names: Fanding
+    - family-names: Aw
+      given-names: Alan J.
+    - family-names: Erdmann-Pham
+      given-names: Dan D.
+    - family-names: Fischer
+      given-names: Jonathan
+    - family-names: Song
+      given-names: Yun S.
+  journal: "Cell Reports Methods"
+  year: 2025
+  volume: 5
+  issue: 9
+  start: 101147
+  doi: "10.1016/j.crmeth.2025.101147"

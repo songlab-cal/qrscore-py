@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qrscore"
+version = "1.5.2"
+description = "Quantile rank score tests for shifts in mean and dispersion (Python port of the Bioconductor package QRscore)"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.9"
+authors = [
+    { name = "Fanding Zhou", email = "zhoufd@berkeley.edu" },
+    { name = "Alan Aw" },
+    { name = "Dan Erdmann-Pham" },
+    { name = "Jonathan Fischer" },
+]
+dependencies = ["numpy>=1.22", "scipy>=1.9", "pandas>=1.5"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/songlab-cal/QRscore"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+qrscore = ["data/*.csv.gz"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
