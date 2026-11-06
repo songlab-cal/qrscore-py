@@ -25,3 +25,17 @@ def load_example_dataset():
         out[f"labels{i}"] = s["label"].to_numpy()
         out[f"size_factors{i}"] = pd.Series(s["size_factor"].to_numpy(), index=s["sample"])
     return out
+
+
+def load_example_dataset_raw():
+    """Return the raw GTEx example data (R: data(example_dataset_raw_3000_genes)).
+
+    A dict with ``COUNTS`` (raw counts, 755 samples x 3000 genes, as in R) and
+    ``METADATA`` (columns ID, LONG_ID, AGE, SEX; one row per sample, same order).
+    """
+    root = resources.files("qrscore") / "data"
+    with resources.as_file(root / "example_raw_counts.csv.gz") as f:
+        counts = pd.read_csv(f, index_col=0)
+    with resources.as_file(root / "example_raw_metadata.csv.gz") as f:
+        meta = pd.read_csv(f)
+    return {"COUNTS": counts, "METADATA": meta}

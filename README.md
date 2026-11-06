@@ -38,6 +38,10 @@ res = q.qrscore_genetest(d["example_data2"], d["labels2"],
 res["var_test"].head()
 ```
 
+For a full walkthrough on the bundled GTEx data (filtering, size factors,
+two- and three-group tests, DEGs and DDGs), see the
+[vignette](vignettes/QRscore.md).
+
 ## API mapping
 
 | R | Python | R-style alias |
@@ -50,54 +54,8 @@ res["var_test"].head()
 | `getCompositionPValue` | `get_composition_pvalue` | `getCompositionPValue` |
 | `rank_x`, `computeweight_mean`, `computeweight_disp`, `rzinbinom` | same names | |
 | `data(example_dataset)` | `load_example_dataset()` | |
-
-Argument renames: `wList` → `w_list`, `LR.test` → `lr_test`, `gene.name` →
-`gene_name`, `ties.break` → `ties_break`, `pairwise_logFC` → `pairwise_logfc`,
-`bigN` → `big_n`. Every function that draws random numbers takes
-`rng` (a `numpy.random.Generator` or seed). `NA` is returned as `nan`;
-R `message()`s go to the `"qrscore"` logger; R warnings are Python warnings.
-
-## How closely it matches R
-
-Model fitting replicates the R code paths step by step rather than calling a
-generic optimiser, because results are sensitive to *where* a fit stops:
-
-* NB fit — `MASS::glm.nb` (Poisson start, `theta.ml` Newton iterations,
-  alternation loop), then QRscore's check against a direct maximisation
-  (R's `optim` BFGS with its finite-difference gradient, ported exactly).
-* `pscl::zeroinfl` (negbin) — same truncated-count pre-fit, starting values and
-  BFGS optimiser (`vmmin`) with pscl's tolerance.
-* `dnbinom` — R's saddle-point algorithm (`dbinom_raw`/`bd0`/`stirlerr`);
-  `qnbinom` with R's left-continuity fuzz; `wilcox.test(correct = FALSE)`.
-
-Validated against QRscore 1.5.2 in R (R 4.3.3, MASS 7.3-60, pscl 1.5.9) on
-2,880 reference values (scripts in `validation/`):
-
-* Weight vectors and variances: agree to ~1e-11.
-* Asymptotic tests, Mann–Whitney, NB-weighted two- and K-sample tests: agree
-  to ~1e-7.
-* ZINB-weighted tests: within 1e-3, usually exact (on very flat likelihoods the
-  BFGS path can differ in the last floating-point bits).
-* `QRscoreGenetest` on 150 GTEx genes (2 and 3 groups, mean and dispersion):
-  log fold changes to 1e-14, p-values within 0.002.
-* Resampling p-values agree within Monte Carlo error; random streams differ from R.
-
-For exact comparisons `rank_x`'s random tie-breaking is replaced by a
-deterministic rule on both sides; with random tie-breaking, p-values for tied
-count data vary between runs in R as well.
-
-## Options beyond the R package
-
-* `fit_method="mle"` (default `"r"`): fit the NB / ZINB models by a
-  multi-start maximum-likelihood search instead of reproducing `MASS::glm.nb`
-  and `pscl::zeroinfl` step by step.
-
-## Other differences from the R package
-
-* **Parallelism:** `num_cores` uses processes; each gene gets its own random
-  stream from `seed`, so results do not depend on `num_cores`.
-* **Label order:** sorted with Python ordering (R's `sort()` uses locale
-  collation, which can differ for mixed-case labels).
+| `data(example_dataset_raw_3000_genes)` | `load_example_dataset_raw()` | |
+| `DESeq2::estimateSizeFactors` | `estimate_size_factors()` | |
 
 ## Notes
 

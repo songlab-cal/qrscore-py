@@ -11,8 +11,9 @@ from ._models import fit_nb, fit_zinb
 from ._utils import computeweight_disp, computeweight_mean, get_composition_pvalue, rank_x
 from .core import (qrscore_flex, qrscore_test, qrscore_zinb, qrscore_zinb_nsamples,
                    wilcox_test_pvalue)
-from .datasets import load_example_dataset
+from .datasets import load_example_dataset, load_example_dataset_raw
 from .de_analysis import p_adjust_bh, qrscore_genetest
+from .normalization import estimate_size_factors
 
 logging.getLogger("qrscore").addHandler(logging.NullHandler())
 
@@ -30,7 +31,8 @@ __all__ = [
     "qrscore_flex", "qrscore_zinb", "qrscore_zinb_nsamples", "qrscore_test",
     "qrscore_genetest", "rank_x", "computeweight_mean", "computeweight_disp",
     "get_composition_pvalue", "rzinbinom", "fit_nb", "fit_zinb", "p_adjust_bh",
-    "wilcox_test_pvalue", "load_example_dataset",
+    "wilcox_test_pvalue", "load_example_dataset", "load_example_dataset_raw",
+    "estimate_size_factors",
     "QRscore_Flex", "QRscore_ZINB", "QRscore_ZINB_nSamples", "QRscoreTest",
     "QRscoreGenetest", "getCompositionPValue",
 ]

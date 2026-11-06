@@ -229,3 +229,15 @@ def test_weights_equal_zinb_score():
         u = mu / (b + mu)
         zm = np.where(x == 0, -mu * (1 - u) * _nb_zero_share(b, np.log1p(-u), pi), (1 - u) * (x - mu))
         np.testing.assert_allclose(zm, sm, rtol=1e-5, atol=1e-7)
+
+
+def test_raw_dataset_and_deseq2_size_factors():
+    raw = q.load_example_dataset_raw()
+    counts = raw["COUNTS"]
+    assert counts.shape == (755, 3000) and len(raw["METADATA"]) == 755
+    kept = (counts.mean() > 5) & ((counts == 0).mean() < 0.2)
+    assert kept.sum() == 1213                                 # as in the R vignette
+    sf = q.estimate_size_factors(counts.loc[:, kept].T)
+    ref = pd.read_csv(__import__("pathlib").Path(__file__).parent / "r_reference" / "deseq2_size_factors.csv")
+    assert list(sf.index) == list(ref["sample"])
+    np.testing.assert_allclose(sf.values, ref["size_factor"].values, rtol=1e-12)   # DESeq2::estimateSizeFactors
