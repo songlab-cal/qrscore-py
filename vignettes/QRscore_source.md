@@ -21,8 +21,8 @@ combines non-parametric tests with weights informed by (zero-inflated) negative
 binomial models, ensuring both high power and strictly controlled FDR.
 
 This is the Python implementation of the Bioconductor package
-[QRscore](https://bioconductor.org/packages/QRscore); it gives the same results
-as QRscore 1.5.2 in R. This vignette follows the R vignette step by step.
+[QRscore](https://bioconductor.org/packages/QRscore). This vignette walks
+through a typical analysis on example data.
 
 ## Installation
 
@@ -74,9 +74,7 @@ pd.Series(ages).value_counts().sort_index().rename("samples").to_frame()
 ### Data Prefiltering and Normalization
 
 * Genes with low expression or high dropout rates are excluded.
-* Size factors are estimated with DESeq2's median-of-ratios method
-  (`q.estimate_size_factors` gives the same values as
-  `DESeq2::estimateSizeFactors`).
+* Size factors are estimated with the DESeq2 median-of-ratios method.
 
 ```python
 col_means = bulk_mat.mean()

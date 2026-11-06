@@ -1,6 +1,6 @@
 """Regression against outputs of the R package (QRscore 1.5.2).
 
-``r_reference/r_results.csv`` was produced by ``validation/run_r.R`` on the same
+``r_reference/r_results.csv`` holds outputs of the R package on the same
 inputs with QRscore 1.5.2 in R. Both sides use the same deterministic tie-breaking in ``rank_x`` so the
 comparison is exact up to optimiser tolerance; with R's random tie-breaking the
 p-values of tied count data vary from run to run in R too.

@@ -1,73 +1,53 @@
 # qrscore (Python)
 
-Python implementation of the Bioconductor package
-[QRscore](https://bioconductor.org/packages/QRscore) (Quantile Rank Score):
-non-parametric two-sample and K-sample tests for shifts in mean **and**
-dispersion of gene expression, with weights derived from NB / ZINB score
-functions.
-
-This version matches QRscore **1.5.2** in R. It depends only on numpy, scipy
-and pandas.
+Python implementation of [QRscore](https://bioconductor.org/packages/QRscore):
+non-parametric tests that detect shifts in the **mean** and in the
+**dispersion** (variance) of gene expression, for two or more groups.
 
 ## Install
 
 ```bash
-pip install ./qrscore-py          # or: pip install -e ./qrscore-py
-pytest qrscore-py/tests           # includes a regression test against R outputs
+pip install git+https://github.com/songlab-cal/qrscore-py
 ```
+
+Requires Python 3.9+ with numpy, scipy and pandas (installed automatically).
 
 ## Quick start
 
 ```python
-import numpy as np
 import qrscore as q
 
-# Two-sample dispersion test with ZINB-derived weights
-x = q.rzinbinom(100, size=2, mu=20, pi=0.1, rng=1)
-y = q.rzinbinom(100, size=1, mu=20, pi=0.1, rng=2)
-q.qrscore_test(np.r_[x, y], np.repeat(["A", "B"], 100),
-               measure="dispersion", approx="asymptotic", rng=0)
+d = q.load_example_dataset()          # GTEx whole-blood example
 
-# Gene-wise analysis on the bundled GTEx example
-d = q.load_example_dataset()
-res = q.qrscore_genetest(d["example_data2"], d["labels2"],
-                         size_factors=d["size_factors2"].values,
-                         pairwise_test=True, pairwise_logfc=True,
-                         test_mean=True, test_dispersion=True,
-                         approx="asymptotic", num_cores=4)
-res["var_test"].head()
+result = q.qrscore_genetest(
+    d["example_data2"],               # raw counts, genes x samples
+    d["labels2"],                     # age group of each sample
+    size_factors=d["size_factors2"],
+    pairwise_test=True, test_mean=True, test_dispersion=True,
+    approx="asymptotic",
+)
+
+result["mean_test"].head()            # genes ranked by mean-shift p-value
+result["var_test"].head()             # genes ranked by dispersion-shift p-value
 ```
 
-For a full walkthrough on the bundled GTEx data (filtering, size factors,
-two- and three-group tests, DEGs and DDGs), see the
-[vignette](vignettes/QRscore.md).
+For a step-by-step walkthrough (filtering, normalization, two- and
+three-group tests, DEGs and DDGs), see the [vignette](vignettes/QRscore.md).
 
-## API mapping
+## Main functions
 
-| R | Python | R-style alias |
-|---|---|---|
-| `QRscoreTest` | `qrscore_test` | `QRscoreTest` |
-| `QRscoreGenetest` | `qrscore_genetest` | `QRscoreGenetest` |
-| `QRscore_Flex` | `qrscore_flex` | `QRscore_Flex` |
-| `QRscore_ZINB` | `qrscore_zinb` | `QRscore_ZINB` |
-| `QRscore_ZINB_nSamples` | `qrscore_zinb_nsamples` | `QRscore_ZINB_nSamples` |
-| `getCompositionPValue` | `get_composition_pvalue` | `getCompositionPValue` |
-| `rank_x`, `computeweight_mean`, `computeweight_disp`, `rzinbinom` | same names | |
-| `data(example_dataset)` | `load_example_dataset()` | |
-| `data(example_dataset_raw_3000_genes)` | `load_example_dataset_raw()` | |
-| `DESeq2::estimateSizeFactors` | `estimate_size_factors()` | |
+| Function | What it does |
+|---|---|
+| `qrscore_genetest` | Test every gene in a count matrix for mean and/or dispersion shifts |
+| `qrscore_test` | Test a single gene (two or more groups) |
+| `estimate_size_factors` | Size factors for normalization (DESeq2 median-of-ratios) |
+| `load_example_dataset`, `load_example_dataset_raw` | GTEx whole-blood example data |
+| `qrscore_flex`, `qrscore_zinb`, `qrscore_zinb_nsamples` | Lower-level tests with custom or model-based weights |
 
-## Notes
+R function names (`QRscoreTest`, `QRscoreGenetest`, ...) also work.
 
-* `qrscore_genetest` with two groups computes p-values only when
-  `pairwise_test=True` (the default is `False`), as in R.
-* In resampling and exact enumeration, the null distribution often has atoms
-  exactly at the observed statistic; whether they count as `<` depends on
-  floating-point summation order, which can move p by up to ~1% of its value.
-* For small samples the dispersion test's model-based variance can exceed the
-  variance of the weights actually used (~15% at 200 vs 200), making it
-  slightly conservative.
-* `perturb` (K-sample) and `n_mom` are accepted but unused, as in R.
+With two groups, `qrscore_genetest` reports p-values when
+`pairwise_test=True`. Use `num_cores` to run genes in parallel.
 
 ## Citation
 
